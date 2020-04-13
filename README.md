@@ -36,67 +36,87 @@
 
 
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE generatorConfiguration
-		PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
-		"http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<!-- 配置生成器 -->
 <generatorConfiguration>
-	<classPathEntry
-			location="E:/Maven/LocalRepository/mysql/mysql-connector-java/5.1.34/mysql-connector-java-5.1.34.jar" />
-	<context id="MysqlTables" targetRuntime="MyBatis3" defaultModelType="flat">
 
-		<property name="javaFileEncoding" value="UTF-8"/>
-		<!-- 分页相关 -->
-		<plugin type="org.mybatis.generator.plugins.RowBoundsPlugin" />
-		<!-- 带上序列化接口 -->
-		<plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
-		<!-- 自定义的注释生成插件-->
-		<plugin type="com.chrm.mybatis.generator.plugins.CommentPlugin">
-			<!-- 抑制警告 -->
-			<property name="suppressTypeWarnings" value="true" />
-			<!-- 是否去除自动生成的注释 true：是 ： false:否 -->
-			<property name="suppressAllComments" value="false" />
-			<!-- 是否生成注释代时间戳-->
-			<property name="suppressDate" value="true" />
-		</plugin>
-		<!-- 整合lombok-->
-		<plugin type="com.chrm.mybatis.generator.plugins.LombokPlugin" >
-			<property name="hasLombok" value="true"/>
-		</plugin>
+    <!--classPathEntry:数据库的JDBC驱动,换成你自己的驱动位置 可选 -->
+    <classPathEntry location="D:\MySQL\mysql-connector-java-5.1.47.jar"/>
 
-		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
-						connectionURL="jdbc:mysql://localhost:3306/sf-quiz?useUnicode=true&amp;characterEncoding=UTF-8"
-						userId="root" password="362427gg">
-		</jdbcConnection>
+    <!-- 一个数据库一个context,defaultModelType="flat" 大数据字段，不分表 -->
+    <context id="MysqlTables" targetRuntime="MyBatis3Simple" defaultModelType="flat">
 
-		<javaTypeResolver>
-			<property name="forceBigDecimals" value="false" />
-		</javaTypeResolver>
+        <!-- 自动识别数据库关键字，默认false，如果设置为true，根据SqlReservedWords中定义的关键字列表；一般保留默认值，遇到数据库关键字（Java关键字），使用columnOverride覆盖 -->
+        <property name="autoDelimitKeywords" value="true"/>
 
-		<!-- 实体生成目录配置 -->
-		<javaModelGenerator targetPackage="com.chrm.inforsServer.dataobject"
-							targetProject="src/main/java">
-			<property name="enableSubPackages" value="false" />
-			<property name="trimStrings" value="true" />
-		</javaModelGenerator>
+        <!-- 生成的Java文件的编码 -->
+        <property name="javaFileEncoding" value="utf-8"/>
 
-		<!-- mapper.xml接口生成目录配置 -->
-		<sqlMapGenerator targetPackage="sqlmap/com/chrm/inforsServer.mapper" targetProject="src/main/resources">
-			<property name="enableSubPackages" value="true" />
-		</sqlMapGenerator>
+        <!-- 带上序列化接口 -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+        <!-- 自定义的注释生成插件-->
+        <plugin type="com.chrm.mybatis.generator.plugins.CommentPlugin">
+            <!-- 抑制警告 -->
+            <property name="suppressTypeWarnings" value="true" />
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="false" />
+            <!-- 是否生成注释代时间戳-->
+            <property name="suppressDate" value="true" />
+        </plugin>
+        <!-- 整合lombok-->
+        <plugin type="com.chrm.mybatis.generator.plugins.LombokPlugin" >
+            <property name="hasLombok" value="true"/>
+        </plugin>
 
-		<!-- mapper接口生成目录配置 -->
-		<javaClientGenerator type="XMLMAPPER"
-							 targetPackage="com.chrm.inforsServer" targetProject="src/main/java">
-			<property name="enableSubPackages" value="true" />
-		</javaClientGenerator>
 
-		<!--表格实体配置-->
-		<table tableName="award" domainObjectName="AwardDo">
-			<generatedKey column="award_id" sqlStatement="JDBC" identity="true" />
-		</table>
+        <!-- 注释 -->
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/><!-- 是否取消注释 -->
+            <property name="suppressDate" value="false"/> <!-- 是否生成注释代时间戳-->
+        </commentGenerator>
 
-	</context>
+        <!-- jdbc连接-->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://192.168.0.135:3306/xfs_store?serverTimezone=UTC"
+                        userId="dev_write"
+                        password="123456"/>
+
+        <!-- 类型转换 -->
+        <javaTypeResolver>
+            <!-- 是否使用bigDecimal， false可自动转化以下类型（Long, Integer, Short, etc.） -->
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <!-- 生成实体类地址 -->
+        <javaModelGenerator targetPackage="com.xfs.mybatis.entity" targetProject="src/main/java">
+            <!-- 是否让schema作为包的后缀 -->
+            <property name="enableSubPackages" value="false"/>
+            <!-- 从数据库返回的值去掉前后空格 -->
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- 生成map.xml文件存放地址 -->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
+            <property name="enableSubPackages" value="false"/>
+        </sqlMapGenerator>
+
+        <!-- 生成接口dao -->
+        <javaClientGenerator targetPackage="com.xfs.mybatis.dao" targetProject="src/main/java" type="XMLMAPPER">
+            <property name="enableSubPackages" value="false"/>
+        </javaClientGenerator>
+
+        <!-- table可以有多个,每个数据库中的表都可以写一个table，tableName表示要匹配的数据库表,也可以在tableName属性中通过使用%通配符来匹配所有数据库表,只有匹配的表才会自动生成文件 enableSelectByPrimaryKey相应的配置表示是否生成相应的接口 -->
+        <table tableName="app_wheel_area" enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"
+               enableSelectByPrimaryKey="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true">
+            <property name="useActualColumnNames" value="true"/>
+        </table>
+
+    </context>
 </generatorConfiguration>
+
 
 
 ```
